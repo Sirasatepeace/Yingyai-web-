@@ -2,13 +2,13 @@
    ธีมสีของเว็บไซต์ — ปรับ 4 ค่าแรกให้ตรงกับสีในโลโก้ได้เลย
    ========================================================= */
 :root {
-  --brand: #1d3f8f;        /* สีหลัก (น้ำเงิน) */
-  --brand-dark: #142c66;
-  --accent: #f5b301;       /* สีรอง (เหลืองทอง) */
-  --accent-dark: #d99a00;
+  --brand: #16213e;        /* สีหลัก (กรมท่าเข้ม — ตัดกับทองของโลโก้) */
+  --brand-dark: #0d1530;
+  --accent: #fccf00;       /* สีทองจากโลโก้ */
+  --accent-dark: #e0b600;
 
-  --brand-soft: #e8eefb;
-  --accent-soft: #fff5d6;
+  --brand-soft: #eceef5;
+  --accent-soft: #fff8d1;
   --bg: #f7f8fc;
   --surface: #ffffff;
   --text: #1c2333;
@@ -50,7 +50,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 1.5rem 0; }
 .site-header .container { display: flex; align-items: center; gap: 16px; min-height: 68px; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--brand-dark); font-family: var(--font-head); font-weight: 700; font-size: 1.15rem; }
 .brand:hover { text-decoration: none; }
-.brand img { height: 46px; width: auto; }
+.brand img { height: 48px; width: 48px; padding: 5px; border-radius: 12px; background: var(--brand); }
 .brand small { display: block; font-weight: 400; font-size: .75rem; color: var(--muted); }
 .nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .nav a, .nav button.linklike { padding: 8px 12px; border-radius: 10px; color: var(--text); font-weight: 500; }
@@ -107,7 +107,7 @@ button.linklike { background: none; border: 0; font: inherit; color: var(--brand
 .hero h1 span { color: var(--accent); }
 .hero p { font-size: 1.1rem; opacity: .92; max-width: 34em; }
 .hero-card { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: 24px; backdrop-filter: blur(4px); }
-.hero-card img { width: 160px; margin: 0 auto 12px; background: #fff; border-radius: 50%; padding: 10px; }
+.hero-card img { width: 180px; margin: 0 auto 12px; filter: drop-shadow(0 0 18px rgba(252,207,0,.35)); }
 .stats { display: flex; gap: 28px; margin-top: 24px; flex-wrap: wrap; }
 .stats b { display: block; font: 700 1.8rem var(--font-head); color: var(--accent); }
 @media (max-width: 800px) { .hero .container { grid-template-columns: 1fr; padding: 40px 0; } .hero-card { display: none; } }

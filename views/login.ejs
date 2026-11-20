@@ -1,7 +1,7 @@
 <%- include('partials/head') %>
 <div class="container form-card narrow">
   <div class="card card-pad">
-    <div class="center"><img src="<%= site.logo %>" alt="" style="height:72px;margin:0 auto 8px"></div>
+    <div class="center"><img src="<%= site.logo %>" alt="" style="height:80px;width:80px;padding:8px;border-radius:18px;background:var(--brand);margin:0 auto 8px"></div>
     <h1 class="center" style="font-size:1.6rem">เข้าสู่ระบบ</h1>
     <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
     <form method="post" action="/login">

@@ -13,7 +13,7 @@ npm start                                                # เปิด http://l
 ใช้งานจริงให้ตั้งค่า `SESSION_SECRET` (สุ่มยาว ๆ), `NODE_ENV=production` และ `COOKIE_SECURE=1` เมื่อใช้ HTTPS
 
 ## ปรับให้เข้ากับแบรนด์
-- **โลโก้**: วางไฟล์ไว้ที่ `public/img/` แล้วแก้ `site.logo` ใน `src/config.js` (หรือ env `SITE_LOGO=/img/logo.png`)
+- **โลโก้**: `public/img/logo.png` (พื้นโปร่งใส) — เปลี่ยนไฟล์ได้ที่ `site.logo` ใน `src/config.js`
 - **สีธีม**: แก้ 4 ค่าแรกใน `:root` ที่ `public/css/style.css` (`--brand`, `--brand-dark`, `--accent`, `--accent-dark`)
 - **ชื่อสถาบัน / ช่องทางติดต่อ / บัญชีรับโอน**: `src/config.js`
 

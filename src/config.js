@@ -19,7 +19,7 @@ module.exports = {
     nameTh: process.env.SITE_NAME_TH || 'สถาบันกวดวิชาออนไลน์ ยิ่งใหญ่',
     tagline: 'เรียนสนุก เข้าใจจริง ได้ทุกที่ทุกเวลา',
     // ใส่ไฟล์โลโก้จริงไว้ที่ public/img/ แล้วแก้ชื่อไฟล์ตรงนี้ (เช่น /img/logo.png)
-    logo: process.env.SITE_LOGO || '/img/logo.svg',
+    logo: process.env.SITE_LOGO || '/img/logo.png',
     contactLine: process.env.CONTACT_LINE || '@yingyai',
     contactPhone: process.env.CONTACT_PHONE || '08x-xxx-xxxx',
   },
