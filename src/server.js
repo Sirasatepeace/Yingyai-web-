@@ -9,7 +9,8 @@ const { locals, csrf } = require('./middleware');
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(config.ROOT, 'views'));
-app.set('trust proxy', 'loopback');
+// Render terminates HTTPS at its reverse proxy. Keep local defaults unchanged.
+app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : 'loopback');
 app.disable('x-powered-by');
 
 app.use((req, res, next) => {

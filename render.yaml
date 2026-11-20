@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: yingyai-academy
+    runtime: docker
+    repo: https://github.com/Sirasatepeace/Yingyai-web-
+    branch: claude/charming-mccarthy-njc51c
+    plan: starter
+    region: singapore
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: yingyai-data
+      mountPath: /var/data
+      sizeGB: 10
