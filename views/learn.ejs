@@ -1,0 +1,65 @@
+<%- include('partials/head') %>
+<div class="container">
+  <div class="row" style="padding-top:20px"><a href="/courses/<%= course.slug %>">← <%= course.title %></a></div>
+  <div class="learn">
+    <div>
+      <% if (!lesson) { %>
+        <div class="card card-pad center muted">คอร์สนี้ยังไม่มีบทเรียน</div>
+      <% } else { %>
+        <% const videos = materials.filter(function (m) { return m.kind === 'video'; }); const docs = materials.filter(function (m) { return m.kind === 'document'; }); %>
+        <h1 style="font-size:1.5rem"><%= lesson.title %></h1>
+        <% if (videos.length) { %>
+          <div class="player"><video id="player" controls controlsList="nodownload" preload="metadata" playsinline oncontextmenu="return false" src="/media/<%= videos[0].id %>"></video></div>
+          <% if (videos.length > 1) { %>
+            <div class="video-tabs">
+              <% videos.forEach(function (v, i) { %><button class="btn btn-sm <%= i === 0 ? 'btn-primary' : 'btn-ghost' %>" data-src="/media/<%= v.id %>">🎬 <%= v.title %></button><% }) %>
+            </div>
+          <% } %>
+        <% } %>
+        <% if (lesson.description) { %><div class="card card-pad prose" style="margin-top:16px"><%= lesson.description %></div><% } %>
+        <% if (docs.length) { %>
+          <h3 style="margin-top:24px">📄 เอกสารประกอบการเรียน</h3>
+          <ul class="doc-list">
+            <% docs.forEach(function (d) { %>
+              <li>
+                <span class="ico"><%= /pdf/.test(d.mime) ? '📕' : /image/.test(d.mime) ? '🖼️' : /presentation|powerpoint/.test(d.mime) ? '📊' : /sheet|excel/.test(d.mime) ? '📗' : '📘' %></span>
+                <div style="flex:1"><strong><%= d.title %></strong><div class="small muted"><%= formatSize(d.size) %></div></div>
+                <% if (/pdf|image/.test(d.mime)) { %><button class="btn btn-ghost btn-sm" data-view="/media/<%= d.id %>">เปิดอ่าน</button><% } %>
+                <a class="btn btn-outline btn-sm" href="/media/<%= d.id %>?download=1">ดาวน์โหลด</a>
+              </li>
+            <% }) %>
+          </ul>
+          <iframe id="docViewer" class="doc-viewer" title="เอกสาร" hidden></iframe>
+        <% } %>
+        <% if (!materials.length) { %><div class="card card-pad muted">บทเรียนนี้ยังไม่มีไฟล์</div><% } %>
+        <div class="row" style="margin-top:24px">
+          <% if (prev) { %><a class="btn btn-ghost" href="/learn/<%= course.slug %>/<%= prev.id %>">← บทก่อนหน้า</a><% } %>
+          <span class="spacer"></span>
+          <% if (next && (access || next.is_preview)) { %><a class="btn btn-primary" href="/learn/<%= course.slug %>/<%= next.id %>">บทถัดไป →</a><% } %>
+        </div>
+      <% } %>
+    </div>
+    <aside class="side-lessons">
+      <h3>บทเรียน (<%= lessons.length %>)</h3>
+      <% lessons.forEach(function (l, i) { const open = access || l.is_preview; %>
+        <a href="<%= open ? '/learn/' + course.slug + '/' + l.id : '/courses/' + course.slug %>" class="<%= lesson && l.id === lesson.id ? 'current' : '' %> <%= open ? '' : 'locked' %>">
+          <span><%= i + 1 %>.</span><span style="flex:1"><%= l.title %></span><span><%= open ? (l.videos ? '🎬' : '📄') : '🔒' %></span>
+        </a>
+      <% }) %>
+    </aside>
+  </div>
+</div>
+<script>
+  document.querySelectorAll('[data-src]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = document.getElementById('player'); p.src = b.dataset.src; p.play();
+      document.querySelectorAll('[data-src]').forEach(function (x) { x.className = 'btn btn-sm ' + (x === b ? 'btn-primary' : 'btn-ghost'); });
+    });
+  });
+  document.querySelectorAll('[data-view]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = document.getElementById('docViewer'); f.hidden = false; f.src = b.dataset.view; f.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+<%- include('partials/foot') %>

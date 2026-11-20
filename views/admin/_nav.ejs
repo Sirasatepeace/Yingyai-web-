@@ -1,0 +1,7 @@
+<nav class="admin-nav">
+  <a href="/admin" class="<%= path === '/admin' ? 'active' : '' %>">📊 ภาพรวม</a>
+  <a href="/admin/users" class="<%= path.startsWith('/admin/users') ? 'active' : '' %>">👥 สมาชิก / อนุมัติ</a>
+  <a href="/admin/courses" class="<%= path.startsWith('/admin/courses') ? 'active' : '' %>">📚 คอร์สเรียน</a>
+  <a href="/admin/payments" class="<%= path.startsWith('/admin/payments') ? 'active' : '' %>">💳 การชำระเงิน</a>
+  <a href="/admin/schools" class="<%= path.startsWith('/admin/schools') ? 'active' : '' %>">🏫 ฐานข้อมูลโรงเรียน</a>
+</nav>

@@ -1,0 +1,124 @@
+<%- include('../partials/head') %>
+<div class="container admin-wrap">
+  <%- include('_nav') %>
+  <div>
+    <div class="section-head">
+      <h1 style="font-size:1.6rem;margin:0"><%= course.id ? course.title : 'สร้างคอร์สใหม่' %></h1>
+      <% if (course.id) { %><a class="btn btn-ghost btn-sm" href="/courses/<%= course.slug %>" target="_blank">ดูหน้าคอร์ส ↗</a><% } %>
+    </div>
+
+    <form class="card card-pad" method="post" action="<%= course.id ? '/admin/courses/' + course.id : '/admin/courses' %>?_csrf=<%= csrf %>" enctype="multipart/form-data">
+      <h2 style="font-size:1.15rem">ข้อมูลคอร์ส</h2>
+      <div class="field"><label>ชื่อคอร์ส *</label><input type="text" name="title" value="<%= course.title || '' %>" required maxlength="150"></div>
+      <div class="grid-2">
+        <div class="field"><label>วิชา</label><input type="text" name="subject" value="<%= course.subject || '' %>" placeholder="เช่น คณิตศาสตร์" list="subjects"></div>
+        <div class="field"><label>ระดับชั้น</label><input type="text" name="level" value="<%= course.level || '' %>" placeholder="เช่น ม.3 / เตรียมสอบเข้า ม.4" list="levels"></div>
+        <div class="field"><label>ผู้สอน</label><input type="text" name="instructor" value="<%= course.instructor || '' %>"></div>
+        <div class="field"><label>ราคา (บาท) — ใส่ 0 = คอร์สฟรี</label><input type="number" name="price" min="0" step="1" value="<%= course.price || 0 %>"></div>
+      </div>
+      <datalist id="subjects"><option>คณิตศาสตร์</option><option>วิทยาศาสตร์</option><option>ฟิสิกส์</option><option>เคมี</option><option>ชีววิทยา</option><option>ภาษาอังกฤษ</option><option>ภาษาไทย</option><option>สังคมศึกษา</option></datalist>
+      <datalist id="levels"><option>ป.4–ป.6</option><option>ม.1</option><option>ม.2</option><option>ม.3</option><option>ม.4</option><option>ม.5</option><option>ม.6</option><option>เตรียมสอบเข้า ม.1</option><option>เตรียมสอบเข้า ม.4</option><option>TGAT/TPAT/A-Level</option></datalist>
+      <div class="field"><label>คำอธิบายสั้น (แสดงบนการ์ดคอร์ส)</label><input type="text" name="short_desc" value="<%= course.short_desc || '' %>" maxlength="300"></div>
+      <div class="field"><label>รายละเอียดคอร์ส</label><textarea name="description" rows="6"><%= course.description || '' %></textarea></div>
+      <div class="grid-2">
+        <div class="field"><label>ภาพปกคอร์ส (16:9)</label><input type="file" name="cover" accept="image/*">
+          <% if (course.cover) { %><img src="/covers/<%= course.cover %>" alt="" style="margin-top:8px;border-radius:10px;max-height:120px"><label class="check small" style="margin-top:6px"><input type="checkbox" name="remove_cover"> ลบภาพปก</label><% } %>
+        </div>
+        <div class="field"><label>ลิงก์คอร์ส (slug)</label><input type="text" name="slug" value="<%= course.slug || '' %>" placeholder="สร้างอัตโนมัติจากชื่อคอร์ส"></div>
+      </div>
+      <label class="check"><input type="checkbox" name="published" <%= course.published ? 'checked' : '' %>> เผยแพร่ให้นักเรียนเห็น</label>
+      <div class="row" style="margin-top:16px"><button class="btn btn-primary"><%= course.id ? 'บันทึกการแก้ไข' : 'สร้างคอร์ส' %></button></div>
+    </form>
+
+    <% if (course.id) { %>
+      <div class="section-head" style="margin-top:32px"><h2 style="font-size:1.3rem;margin:0">บทเรียน · เทปเรียน · เอกสาร</h2></div>
+      <p class="muted small">แต่ละบทเรียนอัปโหลดได้หลายไฟล์ — วิดีโอ (MP4, WEBM, MOV) และเอกสาร (PDF, Word, PowerPoint, Excel, รูปภาพ, ZIP) ระบบแยกประเภทให้อัตโนมัติ</p>
+
+      <% lessons.forEach(function (l, i) { const files = materials[l.id] || []; %>
+        <details class="lesson-admin" id="lesson-<%= l.id %>" <%= lessons.length <= 3 ? 'open' : '' %>>
+          <summary><span class="badge"><%= i + 1 %></span> <%= l.title %> <span class="spacer"></span>
+            <% if (l.is_preview) { %><span class="badge badge-free">ตัวอย่างฟรี</span><% } %>
+            <span class="small muted">🎬 <%= files.filter(function (f) { return f.kind === 'video'; }).length %> · 📄 <%= files.filter(function (f) { return f.kind === 'document'; }).length %></span>
+          </summary>
+          <div class="body">
+            <form method="post" action="/admin/lessons/<%= l.id %>" style="margin-top:14px">
+              <input type="hidden" name="_csrf" value="<%= csrf %>">
+              <div class="row">
+                <div class="field" style="flex:1;min-width:220px;margin:0"><label class="small">ชื่อบทเรียน</label><input type="text" name="title" value="<%= l.title %>"></div>
+                <div class="field" style="width:100px;margin:0"><label class="small">ลำดับ</label><input type="number" name="position" value="<%= l.position %>"></div>
+              </div>
+              <div class="field" style="margin-top:10px"><label class="small">คำอธิบาย</label><textarea name="description" rows="2"><%= l.description %></textarea></div>
+              <div class="row"><label class="check small"><input type="checkbox" name="is_preview" <%= l.is_preview ? 'checked' : '' %>> ให้ดูตัวอย่างฟรี (ไม่ต้องซื้อ)</label><span class="spacer"></span><button class="btn btn-ghost btn-sm">บันทึกบทเรียน</button></div>
+            </form>
+
+            <h4 style="margin-top:16px">ไฟล์ในบทเรียน</h4>
+            <% if (files.length) { %>
+              <ul class="doc-list">
+                <% files.forEach(function (m) { %>
+                  <li>
+                    <span class="ico"><%= m.kind === 'video' ? '🎬' : '📄' %></span>
+                    <form method="post" action="/admin/materials/<%= m.id %>/rename" class="row" style="flex:1;gap:6px">
+                      <input type="hidden" name="_csrf" value="<%= csrf %>">
+                      <input type="text" name="title" value="<%= m.title %>" style="flex:1;min-width:140px;padding:6px 10px">
+                      <span class="small muted"><%= formatSize(m.size) %></span>
+                      <button class="btn btn-ghost btn-sm" title="บันทึกชื่อ">💾</button>
+                    </form>
+                    <a class="btn btn-ghost btn-sm" href="/media/<%= m.id %>" target="_blank">เปิด</a>
+                    <form class="inline-form" method="post" action="/admin/materials/<%= m.id %>/delete" onsubmit="return confirm('ลบไฟล์นี้?')"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn-ghost btn-sm" style="color:var(--danger)">🗑</button></form>
+                  </li>
+                <% }) %>
+              </ul>
+            <% } else { %><p class="small muted">ยังไม่มีไฟล์</p><% } %>
+
+            <form class="upload-form" method="post" action="/admin/lessons/<%= l.id %>/materials?_csrf=<%= csrf %>" enctype="multipart/form-data">
+              <div class="dropzone">
+                <strong>⬆ อัปโหลดเทปเรียน / เอกสาร</strong>
+                <p class="small muted" style="margin:4px 0 10px">ลากไฟล์มาวาง หรือกดเลือก (เลือกได้หลายไฟล์พร้อมกัน)</p>
+                <input type="file" name="files" multiple accept="video/*,.mp4,.webm,.mov,.m4v,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip,.png,.jpg,.jpeg" required>
+                <div class="progress"><div></div></div>
+                <div class="small upload-msg"></div>
+                <button class="btn btn-primary btn-sm" style="margin-top:10px">อัปโหลด</button>
+              </div>
+            </form>
+
+            <form method="post" action="/admin/lessons/<%= l.id %>/delete" onsubmit="return confirm('ลบบทเรียนนี้และไฟล์ทั้งหมดในบท?')" style="margin-top:12px;text-align:right">
+              <input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike small" style="color:var(--danger)">ลบบทเรียนนี้</button>
+            </form>
+          </div>
+        </details>
+      <% }) %>
+
+      <form class="card card-pad" method="post" action="/admin/courses/<%= course.id %>/lessons">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h3>+ เพิ่มบทเรียน</h3>
+        <div class="field"><input type="text" name="title" placeholder="ชื่อบทเรียน เช่น บทที่ 1 จำนวนจริง" required></div>
+        <div class="field"><textarea name="description" rows="2" placeholder="คำอธิบาย (ไม่บังคับ)"></textarea></div>
+        <div class="row"><label class="check small"><input type="checkbox" name="is_preview"> ให้ดูตัวอย่างฟรี</label><span class="spacer"></span><button class="btn btn-accent">เพิ่มบทเรียน</button></div>
+      </form>
+
+      <div class="section-head" style="margin-top:32px" id="students"><h2 style="font-size:1.3rem;margin:0">ผู้เรียนในคอร์ส (<%= students.length %>)</h2></div>
+      <form method="post" action="/admin/courses/<%= course.id %>/grant" class="row card card-pad" style="margin-bottom:12px;flex-direction:row">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input type="text" name="username" placeholder="ชื่อผู้ใช้ของนักเรียน" style="flex:1;min-width:180px" required>
+        <input type="number" name="amount" placeholder="ยอดที่ชำระ (บาท)" style="width:170px" min="0">
+        <button class="btn btn-outline btn-sm">เพิ่มเข้าคอร์ส</button>
+      </form>
+      <% if (students.length) { %>
+      <div class="table-wrap"><table>
+        <tr><th>นักเรียน</th><th>สถานะ</th><th>ยอด</th><th>วันที่</th></tr>
+        <% students.forEach(function (s) { %>
+          <tr><td><%= s.first_name %> <%= s.last_name %> (<%= s.nickname %>) <span class="small muted">@<%= s.username %></span></td>
+          <td><span class="badge <%= s.status === 'active' ? 'badge-success' : s.status === 'pending' ? 'badge-warning' : 'badge-danger' %>"><%= { active: 'เรียนได้', pending: 'รอตรวจ', rejected: 'ไม่ผ่าน' }[s.status] %></span></td>
+          <td><%= formatPrice(s.amount) %></td><td class="small"><%= s.created_at %></td></tr>
+        <% }) %>
+      </table></div>
+      <% } %>
+
+      <form method="post" action="/admin/courses/<%= course.id %>/delete" onsubmit="return confirm('ลบคอร์สนี้ทั้งหมด รวมบทเรียน ไฟล์ และข้อมูลการลงทะเบียน? ไม่สามารถกู้คืนได้')" style="margin-top:32px">
+        <input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn-danger btn-sm">ลบคอร์สนี้</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+<script src="/js/admin.js"></script>
+<%- include('../partials/foot') %>

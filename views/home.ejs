@@ -1,0 +1,56 @@
+<%- include('partials/head') %>
+<section class="hero">
+  <div class="container">
+    <div>
+      <span class="badge" style="background:var(--accent);color:var(--brand-dark)">สถาบันสอนพิเศษออนไลน์</span>
+      <h1 style="margin-top:12px">เก่งขึ้นได้ <span>ทุกวิชา</span><br>เรียนได้ทุกที่ ทุกเวลา</h1>
+      <p><%= site.nameTh %> — คอร์สติวสำหรับนักเรียนประถมถึงมัธยม พร้อมเทปเรียนย้อนหลังและเอกสารประกอบการเรียนครบทุกบท</p>
+      <div class="row" style="margin-top:20px">
+        <a class="btn btn-accent" href="/courses">ดูคอร์สทั้งหมด</a>
+        <a class="btn btn-outline" style="color:#fff;border-color:#fff" href="/courses?price=free">ทดลองเรียนฟรี</a>
+      </div>
+      <div class="stats">
+        <div><b><%= stats.courses %></b>คอร์สเรียน</div>
+        <div><b><%= stats.students %></b>นักเรียน</div>
+        <div><b>24/7</b>เรียนได้ตลอด</div>
+      </div>
+    </div>
+    <div class="hero-card center">
+      <img src="<%= site.logo %>" alt="">
+      <h3 style="color:#fff"><%= site.tagline %></h3>
+      <% if (!user) { %><a class="btn btn-accent btn-block" href="/register">สมัครสมาชิกฟรี</a><% } else { %><a class="btn btn-accent btn-block" href="/my/courses">ไปที่คอร์สของฉัน</a><% } %>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="features">
+      <div class="feature"><div class="ico">🎬</div><h3>เทปเรียนย้อนหลัง</h3><p class="muted small">ดูซ้ำได้ไม่จำกัด หยุด เลื่อน ทบทวนได้ตามจังหวะของตัวเอง</p></div>
+      <div class="feature"><div class="ico">📄</div><h3>เอกสารครบทุกบท</h3><p class="muted small">ชีทสรุปและแบบฝึกหัด เปิดอ่านบนเว็บหรือดาวน์โหลดเก็บไว้</p></div>
+      <div class="feature"><div class="ico">🎁</div><h3>มีคอร์สเรียนฟรี</h3><p class="muted small">ลองเรียนก่อนตัดสินใจ หลายคอร์สเปิดให้เรียนฟรีทันทีที่สมัคร</p></div>
+      <div class="feature"><div class="ico">🏫</div><h3>ตรงหลักสูตร</h3><p class="muted small">เนื้อหาจัดตามระดับชั้น ป.1 – ม.6 และเตรียมสอบเข้า</p></div>
+    </div>
+  </div>
+</section>
+
+<% if (free.length) { %>
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-head"><h2>คอร์สเรียนฟรี</h2><a href="/courses?price=free">ดูทั้งหมด →</a></div>
+    <div class="grid"><% free.forEach(function (c) { %><%- include('partials/course-card', { c }) %><% }) %></div>
+  </div>
+</section>
+<% } %>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-head"><h2>คอร์สล่าสุด</h2><a href="/courses">ดูทั้งหมด →</a></div>
+    <% if (featured.length) { %>
+      <div class="grid"><% featured.forEach(function (c) { %><%- include('partials/course-card', { c }) %><% }) %></div>
+    <% } else { %>
+      <div class="card card-pad center muted">ยังไม่มีคอร์สที่เปิดสอน — เร็ว ๆ นี้</div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/foot') %>

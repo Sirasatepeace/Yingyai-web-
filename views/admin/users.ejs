@@ -1,0 +1,71 @@
+<%- include('../partials/head') %>
+<div class="container admin-wrap">
+  <%- include('_nav') %>
+  <div>
+    <h1 style="font-size:1.6rem">สมาชิก</h1>
+    <div class="row" style="margin-bottom:14px">
+      <div class="chips">
+        <% [['pending','รออนุมัติ'],['active','ใช้งานได้'],['rejected','ปฏิเสธแล้ว'],['all','ทั้งหมด']].forEach(function (s) { %>
+          <a class="chip <%= status === s[0] ? 'active' : '' %>" href="/admin/users?status=<%= s[0] %>"><%= s[1] %></a>
+        <% }) %>
+      </div>
+      <span class="spacer"></span>
+      <form method="get" class="row"><input type="hidden" name="status" value="<%= status %>"><input type="search" name="q" value="<%= q %>" placeholder="ค้นหาชื่อ/โรงเรียน" style="width:220px"><button class="btn btn-ghost btn-sm">ค้นหา</button></form>
+    </div>
+    <% if (!users.length) { %><div class="card card-pad muted center"><%= status === 'pending' ? '🎉 ไม่มีรายการรออนุมัติ' : 'ไม่พบสมาชิก' %></div><% } %>
+    <% users.forEach(function (u) { %>
+      <div class="card card-pad" style="margin-bottom:14px">
+        <div class="row">
+          <div style="flex:1;min-width:240px">
+            <strong style="font-size:1.1rem"><%= u.first_name %> <%= u.last_name %></strong> <span class="muted">(<%= u.nickname %>)</span> · <%= u.grade %>
+            <div class="small muted">@<%= u.username %> · สมัคร <%= u.created_at %></div>
+            <div style="margin-top:6px">🏫 <strong><%= u.school_input %></strong>
+              <% if (u.school_id) { %><span class="badge badge-success">อยู่ในฐานข้อมูล</span> <span class="small muted"><%= u.school_province %><%= u.school_level ? ' · ' + u.school_level : '' %></span>
+              <% } else { %><span class="badge badge-warning">ไม่พบในฐานข้อมูล</span><% } %>
+            </div>
+            <% if (u.review_note) { %><div class="small" style="color:var(--warning);margin-top:4px">⚠ <%= u.review_note %></div><% } %>
+          </div>
+          <span class="badge <%= u.status === 'active' ? 'badge-success' : u.status === 'pending' ? 'badge-warning' : 'badge-danger' %>"><%= { active: 'ใช้งานได้', pending: 'รออนุมัติ', rejected: 'ปฏิเสธ' }[u.status] %></span>
+        </div>
+
+        <% if (u.status !== 'active') { %>
+          <hr style="margin:12px 0">
+          <% if (u.school_id) { %>
+            <form class="inline-form" method="post" action="/admin/users/<%= u.id %>/approve"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="mode" value="keep"><button class="btn btn-success btn-sm">✓ อนุมัติ</button></form>
+          <% } else { %>
+            <% if (u.suggestions && u.suggestions.length) { %>
+              <div class="suggest"><strong>โรงเรียนที่ชื่อใกล้เคียง</strong> — ถ้านักเรียนสะกดผิด เลือกโรงเรียนที่ถูกต้องแล้วอนุมัติ:<br>
+                <% u.suggestions.forEach(function (s) { %>
+                  <form class="inline-form" method="post" action="/admin/users/<%= u.id %>/approve"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="mode" value="existing"><input type="hidden" name="schoolId" value="<%= s.id %>">
+                    <button class="btn btn-ghost btn-sm">✓ <%= s.name %> <span class="muted">(<%= s.province %>)</span></button></form>
+                <% }) %>
+              </div>
+            <% } %>
+            <details style="margin-top:8px">
+              <summary class="btn btn-success btn-sm">✓ อนุมัติ + เพิ่มโรงเรียนใหม่เข้าฐานข้อมูล</summary>
+              <form method="post" action="/admin/users/<%= u.id %>/approve" class="grid-2" style="margin-top:10px">
+                <input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="mode" value="new">
+                <div class="field" style="grid-column:1/-1"><label>ชื่อโรงเรียน (แก้ไขให้ถูกต้องได้)</label><input type="text" name="name" value="<%= u.school_input %>" required></div>
+                <div class="field"><label>อำเภอ/เขต</label><input type="text" name="district"></div>
+                <div class="field"><label>จังหวัด</label><input type="text" name="province"></div>
+                <div><button class="btn btn-success btn-sm">บันทึกและอนุมัติ</button></div>
+              </form>
+            </details>
+          <% } %>
+          <% if (u.status === 'pending') { %>
+            <form method="post" action="/admin/users/<%= u.id %>/reject" class="row" style="margin-top:10px">
+              <input type="hidden" name="_csrf" value="<%= csrf %>">
+              <input type="text" name="note" placeholder="เหตุผลที่ปฏิเสธ (แสดงให้นักเรียนเห็น)" style="flex:1;min-width:200px">
+              <button class="btn btn-danger btn-sm">✗ ปฏิเสธ</button>
+            </form>
+          <% } %>
+        <% } %>
+        <div class="row small" style="margin-top:10px">
+          <form class="inline-form" method="post" action="/admin/users/<%= u.id %>/reset-password" onsubmit="return confirm('ตั้งรหัสผ่านชั่วคราวใหม่ให้ <%= u.username %>?')"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike">🔑 รีเซ็ตรหัสผ่าน</button></form>
+          <form class="inline-form" method="post" action="/admin/users/<%= u.id %>/delete" onsubmit="return confirm('ลบบัญชี <%= u.username %> ถาวร?')"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike" style="color:var(--danger)">🗑 ลบบัญชี</button></form>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

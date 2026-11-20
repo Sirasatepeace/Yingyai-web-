@@ -1,0 +1,41 @@
+<%- include('partials/head') %>
+<div class="container form-card">
+  <div class="card card-pad">
+    <div class="row"><h1 style="font-size:1.6rem;margin:0">บัญชีของฉัน</h1><span class="spacer"></span>
+      <% if (user.role === 'admin') { %><span class="badge">ผู้ดูแลระบบ</span>
+      <% } else if (user.status === 'active') { %><span class="badge badge-success">ใช้งานได้</span>
+      <% } else if (user.status === 'pending') { %><span class="badge badge-warning">รออนุมัติ</span>
+      <% } else { %><span class="badge badge-danger">ไม่ผ่านการอนุมัติ</span><% } %>
+    </div>
+    <% if (user.status === 'pending') { %>
+      <div class="alert alert-warning">⏳ บัญชีของคุณกำลังรอผู้ดูแลตรวจสอบ<% if (user.review_note) { %> — <%= user.review_note %><% } %><br><span class="small">ระหว่างนี้ดูรายละเอียดคอร์สได้ แต่จะลงทะเบียนเรียนได้หลังได้รับการอนุมัติ</span></div>
+    <% } else if (user.status === 'rejected') { %>
+      <div class="alert alert-error">บัญชีไม่ผ่านการอนุมัติ: <%= user.review_note %><br><span class="small">กรุณาติดต่อสถาบันทาง LINE <%= site.contactLine %></span></div>
+    <% } %>
+    <table style="margin-top:12px">
+      <tr><th>ชื่อผู้ใช้</th><td><%= user.username %></td></tr>
+      <% if (user.role !== 'admin') { %>
+      <tr><th>ชื่อ-นามสกุล</th><td><%= user.first_name %> <%= user.last_name %></td></tr>
+      <tr><th>ชื่อเล่น</th><td><%= user.nickname %></td></tr>
+      <tr><th>ชั้นเรียน</th><td><%= user.grade %></td></tr>
+      <tr><th>โรงเรียน</th><td><%= user.school_input %><% if (school) { %><div class="small muted"><%= [school.district, school.province].filter(Boolean).join(' · ') %></div><% } else { %> <span class="badge badge-warning">รอตรวจสอบ</span><% } %></td></tr>
+      <% } %>
+    </table>
+    <div class="row" style="margin-top:16px"><a class="btn btn-primary" href="/my/courses">คอร์สของฉัน</a><a class="btn btn-ghost" href="/courses">เลือกคอร์ส</a></div>
+  </div>
+
+  <div class="card card-pad" style="margin-top:20px">
+    <h2 style="font-size:1.2rem">เปลี่ยนรหัสผ่าน</h2>
+    <% if (pwError) { %><div class="alert alert-error"><%= pwError %></div><% } %>
+    <form method="post" action="/account/password">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="field"><label>รหัสผ่านปัจจุบัน</label><input type="password" name="current" autocomplete="current-password" required></div>
+      <div class="grid-2">
+        <div class="field"><label>รหัสผ่านใหม่</label><input type="password" name="password" autocomplete="new-password" required></div>
+        <div class="field"><label>ยืนยันรหัสผ่านใหม่</label><input type="password" name="password2" autocomplete="new-password" required></div>
+      </div>
+      <button class="btn btn-outline">บันทึกรหัสผ่านใหม่</button>
+    </form>
+  </div>
+</div>
+<%- include('partials/foot') %>

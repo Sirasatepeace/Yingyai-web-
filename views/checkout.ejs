@@ -1,0 +1,33 @@
+<%- include('partials/head') %>
+<div class="container form-card">
+  <div class="card card-pad">
+    <h1 style="font-size:1.6rem">ชำระเงิน</h1>
+    <div class="row" style="justify-content:space-between;background:var(--bg);padding:14px;border-radius:12px">
+      <div><strong><%= course.title %></strong><div class="small muted"><%= course.subject %> <%= course.level %></div></div>
+      <div class="price" style="font-size:1.6rem"><%= formatPrice(course.price) %></div>
+    </div>
+    <% if (enrollment && enrollment.status === 'pending') { %>
+      <div class="alert alert-info">คุณส่งหลักฐานการชำระเงินแล้ว กำลังรอตรวจสอบ (ส่งใหม่ได้หากแนบผิด)</div>
+    <% } else if (enrollment && enrollment.status === 'rejected') { %>
+      <div class="alert alert-error">การชำระเงินครั้งก่อนไม่ผ่าน: <%= enrollment.note %></div>
+    <% } %>
+    <h3 style="margin-top:20px">1. โอนเงินมาที่บัญชี</h3>
+    <table>
+      <tr><th>ธนาคาร</th><td><%= payment.bank %></td></tr>
+      <tr><th>ชื่อบัญชี</th><td><%= payment.accountName %></td></tr>
+      <tr><th>เลขที่บัญชี</th><td><strong style="font-size:1.15rem"><%= payment.accountNo %></strong></td></tr>
+      <% if (payment.promptpay) { %><tr><th>พร้อมเพย์</th><td><%= payment.promptpay %></td></tr><% } %>
+      <tr><th>ยอดชำระ</th><td><strong><%= formatPrice(course.price) %></strong></td></tr>
+    </table>
+    <h3 style="margin-top:20px">2. แนบสลิปการโอน</h3>
+    <form method="post" action="/courses/<%= course.slug %>/checkout?_csrf=<%= csrf %>" enctype="multipart/form-data">
+      <div class="field">
+        <input type="file" name="slip" accept="image/*,.pdf" required>
+        <div class="hint">รองรับ JPG, PNG, PDF ขนาดไม่เกิน 10 MB</div>
+      </div>
+      <button class="btn btn-accent btn-block">ส่งหลักฐานการชำระเงิน</button>
+    </form>
+    <p class="small muted">หลังผู้ดูแลตรวจสอบแล้ว คอร์สจะปรากฏใน "คอร์สของฉัน" และเริ่มเรียนได้ทันที</p>
+  </div>
+</div>
+<%- include('partials/foot') %>

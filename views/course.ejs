@@ -1,0 +1,62 @@
+<%- include('partials/head') %>
+<section class="course-hero">
+  <div class="container">
+    <div>
+      <div class="row" style="margin-bottom:10px">
+        <% if (course.subject) { %><span class="badge"><%= course.subject %></span><% } %>
+        <% if (course.level) { %><span class="badge badge-muted"><%= course.level %></span><% } %>
+        <% if (!course.published) { %><span class="badge badge-warning">ยังไม่เผยแพร่ (เห็นเฉพาะผู้ดูแล)</span><% } %>
+      </div>
+      <h1><%= course.title %></h1>
+      <p class="muted" style="font-size:1.1rem"><%= course.short_desc %></p>
+      <% if (course.instructor) { %><p>👩‍🏫 ผู้สอน: <strong><%= course.instructor %></strong></p><% } %>
+      <p class="muted">📚 <%= lessons.length %> บทเรียน · 🎬 <%= lessons.reduce(function (a, l) { return a + l.videos; }, 0) %> วิดีโอ · 📄 <%= lessons.reduce(function (a, l) { return a + l.docs; }, 0) %> เอกสาร</p>
+    </div>
+    <div class="buy-box">
+      <div class="course-cover"><% if (course.cover) { %><img src="/covers/<%= course.cover %>" alt=""><% } else { %><span><%= course.subject || course.title %></span><% } %></div>
+      <div class="inner stack">
+        <div class="price <%= course.price > 0 ? '' : 'free' %>" style="font-size:1.8rem"><%= formatPrice(course.price) %></div>
+        <% if (access) { %>
+          <a class="btn btn-primary btn-block" href="/learn/<%= course.slug %>">▶ เข้าเรียน</a>
+        <% } else if (!user) { %>
+          <a class="btn btn-accent btn-block" href="/login?next=/courses/<%= encodeURIComponent(course.slug) %>"><%= course.price > 0 ? 'เข้าสู่ระบบเพื่อซื้อคอร์ส' : 'เข้าสู่ระบบเพื่อเรียนฟรี' %></a>
+          <p class="small muted center" style="margin:0">ยังไม่มีบัญชี? <a href="/register">สมัครสมาชิก</a></p>
+        <% } else if (user.status !== 'active') { %>
+          <div class="alert alert-warning small" style="margin:0">บัญชีของคุณต้องได้รับการอนุมัติก่อนจึงจะลงทะเบียนเรียนได้</div>
+        <% } else if (enrollment && enrollment.status === 'pending') { %>
+          <div class="alert alert-info small" style="margin:0">⏳ ส่งหลักฐานการชำระเงินแล้ว กำลังรอตรวจสอบ</div>
+        <% } else if (course.price > 0) { %>
+          <% if (enrollment && enrollment.status === 'rejected') { %><div class="alert alert-error small" style="margin:0">การชำระเงินครั้งก่อนไม่ผ่าน: <%= enrollment.note %></div><% } %>
+          <a class="btn btn-accent btn-block" href="/courses/<%= course.slug %>/checkout">🛒 ซื้อคอร์สนี้</a>
+        <% } else { %>
+          <form method="post" action="/courses/<%= course.slug %>/enroll"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn-accent btn-block">ลงทะเบียนเรียนฟรี</button></form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="container section">
+  <div style="max-width:760px">
+    <% if (course.description) { %>
+      <h2>รายละเอียดคอร์ส</h2>
+      <div class="prose"><%= course.description %></div>
+      <hr>
+    <% } %>
+    <h2>เนื้อหาในคอร์ส</h2>
+    <% if (lessons.length) { %>
+    <ul class="lesson-list">
+      <% lessons.forEach(function (l, i) { %>
+        <li>
+          <span class="num"><%= i + 1 %></span>
+          <div style="flex:1">
+            <% if (access || (user && l.is_preview)) { %><a href="/learn/<%= course.slug %>/<%= l.id %>"><strong><%= l.title %></strong></a><% } else { %><strong><%= l.title %></strong><% } %>
+            <div class="small muted"><%= l.videos ? '🎬 ' + l.videos + ' วิดีโอ ' : '' %><%= l.docs ? '📄 ' + l.docs + ' เอกสาร' : '' %></div>
+          </div>
+          <% if (l.is_preview && !access) { %><span class="badge badge-free">ดูตัวอย่างฟรี</span><% } else if (!access) { %><span title="ต้องลงทะเบียน">🔒</span><% } %>
+        </li>
+      <% }) %>
+    </ul>
+    <% } else { %><p class="muted">กำลังเตรียมเนื้อหา</p><% } %>
+  </div>
+</div>
+<%- include('partials/foot') %>

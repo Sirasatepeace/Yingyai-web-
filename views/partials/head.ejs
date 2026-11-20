@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' && title ? title + ' | ' : '' %><%= site.name %></title>
+  <link rel="icon" href="<%= site.logo %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <img src="<%= site.logo %>" alt="<%= site.name %>">
+      <span><%= site.name %><small><%= site.nameTh %></small></span>
+    </a>
+    <button class="nav-toggle" aria-label="เมนู" onclick="document.querySelector('.nav').classList.toggle('open')">☰</button>
+    <nav class="nav">
+      <a href="/" class="<%= path === '/' ? 'active' : '' %>">หน้าแรก</a>
+      <a href="/courses" class="<%= path.startsWith('/courses') ? 'active' : '' %>">คอร์สเรียน</a>
+      <% if (user) { %>
+        <a href="/my/courses" class="<%= path.startsWith('/my') || path.startsWith('/learn') ? 'active' : '' %>">คอร์สของฉัน</a>
+        <% if (user.role === 'admin') { %><a href="/admin" class="<%= path.startsWith('/admin') ? 'active' : '' %>">หลังบ้าน</a><% } %>
+        <a href="/account" class="<%= path === '/account' ? 'active' : '' %>">👤 <%= user.nickname || user.username %></a>
+        <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike btn-sm" style="padding:8px 12px">ออกจากระบบ</button></form>
+      <% } else { %>
+        <a href="/login" class="<%= path === '/login' ? 'active' : '' %>">เข้าสู่ระบบ</a>
+        <a href="/register" class="btn btn-accent btn-sm">สมัครสมาชิก</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
+<% if (user && user.status === 'pending' && user.role !== 'admin' && path !== '/account') { %>
+  <div class="container"><div class="alert alert-warning">⏳ บัญชีของคุณกำลังรอผู้ดูแลอนุมัติ — <a href="/account">ดูรายละเอียด</a></div></div>
+<% } %>
+<% if (flash.length) { %>
+  <div class="container"><% flash.forEach(function (f) { %><div class="alert alert-<%= f.type %>"><%= f.message %></div><% }) %></div>
+<% } %>
+<main>

@@ -1,0 +1,29 @@
+<%- include('partials/head') %>
+<div class="container section">
+  <div class="section-head"><h2>คอร์สของฉัน</h2><a class="btn btn-outline btn-sm" href="/courses">+ เลือกคอร์สเพิ่ม</a></div>
+  <% if (!rows.length) { %>
+    <div class="card card-pad center"><p class="muted">ยังไม่ได้ลงทะเบียนคอร์สใด</p><a class="btn btn-accent" href="/courses?price=free">เริ่มจากคอร์สฟรี</a></div>
+  <% } else { %>
+  <div class="grid">
+    <% rows.forEach(function (c) { %>
+      <div class="card">
+        <div class="course-cover"><% if (c.cover) { %><img src="/covers/<%= c.cover %>" alt=""><% } else { %><span><%= c.subject || c.title %></span><% } %></div>
+        <div class="course-body">
+          <h3><%= c.title %></h3>
+          <div class="small muted">📚 <%= c.lesson_count %> บทเรียน</div>
+          <div class="course-foot">
+            <% if (c.enroll_status === 'active') { %>
+              <span class="badge badge-success">พร้อมเรียน</span><a class="btn btn-primary btn-sm" href="/learn/<%= c.slug %>">▶ เข้าเรียน</a>
+            <% } else if (c.enroll_status === 'pending') { %>
+              <span class="badge badge-warning">รอตรวจสอบการชำระเงิน</span>
+            <% } else { %>
+              <span class="badge badge-danger" title="<%= c.enroll_note %>">ชำระเงินไม่ผ่าน</span><a class="btn btn-outline btn-sm" href="/courses/<%= c.slug %>/checkout">ส่งใหม่</a>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+  <% } %>
+</div>
+<%- include('partials/foot') %>

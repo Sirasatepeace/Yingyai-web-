@@ -1,0 +1,35 @@
+<%- include('../partials/head') %>
+<div class="container admin-wrap">
+  <%- include('_nav') %>
+  <div>
+    <h1 style="font-size:1.6rem">ฐานข้อมูลโรงเรียน</h1>
+    <p class="muted">มีโรงเรียนในระบบ <strong><%= total.toLocaleString('th-TH') %></strong> แห่ง ผู้สมัครที่กรอกโรงเรียนตรงกับรายชื่อนี้จะใช้งานได้ทันที ส่วนที่ไม่ตรงจะเข้าคิว "รออนุมัติ"</p>
+    <form method="get" class="row" style="margin-bottom:16px"><input type="search" name="q" value="<%= q %>" placeholder="ค้นหาโรงเรียน" style="flex:1"><button class="btn btn-primary">ค้นหา</button></form>
+    <div class="table-wrap"><table>
+      <tr><th>ชื่อโรงเรียน</th><th>อำเภอ/เขต</th><th>จังหวัด</th><th>ระดับ</th><th></th></tr>
+      <% results.forEach(function (s) { %>
+        <tr><td><%= s.name %></td><td><%= s.district %></td><td><%= s.province %></td><td class="small"><%= s.level %></td>
+        <td><form class="inline-form" method="post" action="/admin/schools/<%= s.id %>/delete" onsubmit="return confirm('ลบโรงเรียนนี้?')"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike small" style="color:var(--danger)">ลบ</button></form></td></tr>
+      <% }) %>
+      <% if (!results.length) { %><tr><td colspan="5" class="center muted"><%= q ? 'ไม่พบ' : 'ยังไม่มีโรงเรียนที่ผู้ดูแลเพิ่มเอง (พิมพ์ค้นหาเพื่อดูทั้งหมด)' %></td></tr><% } %>
+    </table></div>
+
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:24px">
+      <form class="card card-pad" method="post" action="/admin/schools">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h3>+ เพิ่มโรงเรียน</h3>
+        <div class="field"><label>ชื่อโรงเรียน</label><input type="text" name="name" required></div>
+        <div class="grid-2"><div class="field"><label>อำเภอ/เขต</label><input type="text" name="district"></div><div class="field"><label>จังหวัด</label><input type="text" name="province"></div></div>
+        <div class="field"><label>ระดับที่เปิดสอน</label><input type="text" name="level" placeholder="เช่น มัธยมศึกษา"></div>
+        <button class="btn btn-accent btn-sm">เพิ่ม</button>
+      </form>
+      <form class="card card-pad" method="post" action="/admin/schools/import?_csrf=<%= csrf %>" enctype="multipart/form-data">
+        <h3>⬆ นำเข้าจากไฟล์ CSV</h3>
+        <p class="small muted">คอลัมน์: <code>ชื่อโรงเรียน, อำเภอ, จังหวัด, ระดับ</code> (UTF-8) — ข้ามรายการที่ซ้ำให้อัตโนมัติ</p>
+        <div class="field"><input type="file" name="csv" accept=".csv,.txt" required></div>
+        <button class="btn btn-outline btn-sm">นำเข้า</button>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

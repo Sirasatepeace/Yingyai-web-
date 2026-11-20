@@ -1,0 +1,87 @@
+<%- include('partials/head') %>
+<%
+  function f(name) { return errors[name] ? 'invalid' : ''; }
+  function e(name) { return errors[name] || ''; }
+%>
+<div class="container form-card">
+  <div class="card card-pad">
+    <h1 style="font-size:1.6rem">สมัครสมาชิก</h1>
+    <p class="muted">กรอกข้อมูลจริงให้ครบถ้วน ระบบจะตรวจสอบความถูกต้องของชื่อ-นามสกุลและโรงเรียนอัตโนมัติ</p>
+    <% if (errors.form) { %><div class="alert alert-error"><%= errors.form %></div><% } else if (Object.keys(errors).length) { %><div class="alert alert-error">กรุณาแก้ไขข้อมูลที่ไม่ถูกต้อง</div><% } %>
+
+    <form id="regForm" method="post" action="/register" novalidate autocomplete="off">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <div class="hp" aria-hidden="true"><label>เว็บไซต์<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+      <fieldset>
+        <legend>บัญชีผู้ใช้</legend>
+        <div class="field <%= f('username') %>" data-field="username">
+          <label for="username">ชื่อผู้ใช้ (Username)</label>
+          <input type="text" id="username" name="username" value="<%= values.username || '' %>" maxlength="20" autocapitalize="none" spellcheck="false" required>
+          <div class="hint">a-z, 0-9, _ หรือ . ยาว 4–20 ตัว</div>
+          <div class="err"><%= e('username') %></div>
+        </div>
+        <div class="grid-2">
+          <div class="field <%= f('password') %>" data-field="password">
+            <label for="password">รหัสผ่าน</label>
+            <input type="password" id="password" name="password" maxlength="72" autocomplete="new-password" required>
+            <div class="hint">อย่างน้อย 8 ตัว มีตัวอักษรและตัวเลข</div>
+            <div class="err"><%= e('password') %></div>
+          </div>
+          <div class="field <%= f('password2') %>" data-field="password2">
+            <label for="password2">ยืนยันรหัสผ่าน</label>
+            <input type="password" id="password2" name="password2" maxlength="72" autocomplete="new-password" required>
+            <div class="err"><%= e('password2') %></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>ข้อมูลนักเรียน</legend>
+        <div class="grid-2">
+          <div class="field <%= f('firstName') %>" data-field="firstName">
+            <label for="firstName">ชื่อจริง</label>
+            <input type="text" id="firstName" name="firstName" value="<%= values.firstName || '' %>" maxlength="30" placeholder="เช่น สมชาย" required>
+            <div class="hint">ไม่ต้องใส่คำนำหน้า (ด.ช./ด.ญ./นาย/นางสาว)</div>
+            <div class="err"><%= e('firstName') %></div>
+          </div>
+          <div class="field <%= f('lastName') %>" data-field="lastName">
+            <label for="lastName">นามสกุล</label>
+            <input type="text" id="lastName" name="lastName" value="<%= values.lastName || '' %>" maxlength="40" placeholder="เช่น ใจดี" required>
+            <div class="err"><%= e('lastName') %></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field <%= f('nickname') %>" data-field="nickname">
+            <label for="nickname">ชื่อเล่น</label>
+            <input type="text" id="nickname" name="nickname" value="<%= values.nickname || '' %>" maxlength="20" placeholder="เช่น บีม" required>
+            <div class="err"><%= e('nickname') %></div>
+          </div>
+          <div class="field <%= f('grade') %>" data-field="grade">
+            <label for="grade">ชั้นเรียน</label>
+            <select id="grade" name="grade" required>
+              <option value="">— เลือกชั้นเรียน —</option>
+              <% grades.forEach(function (g) { %><option <%= values.grade === g ? 'selected' : '' %>><%= g %></option><% }) %>
+            </select>
+            <div class="err"><%= e('grade') %></div>
+          </div>
+        </div>
+        <div class="field <%= f('school') %>" data-field="school">
+          <label for="school">โรงเรียน</label>
+          <input type="text" id="school" name="school" value="<%= values.school || '' %>" maxlength="120" placeholder="พิมพ์ชื่อโรงเรียนอย่างน้อย 2 ตัวอักษร แล้วเลือกจากรายการ"
+                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="schoolList" required>
+          <input type="hidden" id="schoolId" name="schoolId" value="<%= values.schoolId || '' %>">
+          <ul id="schoolList" class="ac-list" role="listbox" hidden></ul>
+          <div id="schoolStatus" class="school-status"></div>
+          <div class="err"><%= e('school') %></div>
+        </div>
+      </fieldset>
+
+      <button class="btn btn-accent btn-block" id="submitBtn">สมัครสมาชิก</button>
+      <p class="center small muted">มีบัญชีแล้ว? <a href="/login">เข้าสู่ระบบ</a></p>
+    </form>
+  </div>
+</div>
+<script src="/js/validators.js"></script>
+<script src="/js/register.js"></script>
+<%- include('partials/foot') %>

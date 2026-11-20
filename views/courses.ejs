@@ -1,0 +1,21 @@
+<%- include('partials/head') %>
+<div class="container section">
+  <div class="section-head"><h2>คอร์สเรียนทั้งหมด</h2><span class="muted"><%= courses.length %> คอร์ส</span></div>
+  <form class="filters" method="get" action="/courses">
+    <input type="search" name="q" value="<%= filters.q %>" placeholder="ค้นหาคอร์ส เช่น คณิต ม.3">
+    <select name="subject"><option value="">ทุกวิชา</option><% subjects.forEach(function (s) { %><option <%= filters.subject === s ? 'selected' : '' %>><%= s %></option><% }) %></select>
+    <select name="level"><option value="">ทุกระดับชั้น</option><% levels.forEach(function (s) { %><option <%= filters.level === s ? 'selected' : '' %>><%= s %></option><% }) %></select>
+    <select name="price">
+      <option value="">ฟรี + มีค่าใช้จ่าย</option>
+      <option value="free" <%= filters.price === 'free' ? 'selected' : '' %>>เฉพาะคอร์สฟรี</option>
+      <option value="paid" <%= filters.price === 'paid' ? 'selected' : '' %>>เฉพาะคอร์สพรีเมียม</option>
+    </select>
+    <button class="btn btn-primary">ค้นหา</button>
+  </form>
+  <% if (courses.length) { %>
+    <div class="grid"><% courses.forEach(function (c) { %><%- include('partials/course-card', { c, myStatus }) %><% }) %></div>
+  <% } else { %>
+    <div class="card card-pad center muted">ไม่พบคอร์สที่ตรงกับเงื่อนไข</div>
+  <% } %>
+</div>
+<%- include('partials/foot') %>

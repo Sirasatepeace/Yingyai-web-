@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="โลโก้ (ตัวอย่าง — แทนที่ด้วยโลโก้จริง)">
+  <circle cx="60" cy="60" r="56" fill="#1d3f8f"/>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#f5b301" stroke-width="4"/>
+  <path d="M34 78 L60 34 L86 78 Z" fill="#f5b301"/>
+  <path d="M44 78 L60 50 L76 78 Z" fill="#1d3f8f"/>
+  <rect x="30" y="80" width="60" height="6" rx="3" fill="#ffffff"/>
+</svg>

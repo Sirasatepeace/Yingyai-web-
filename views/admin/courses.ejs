@@ -1,0 +1,21 @@
+<%- include('../partials/head') %>
+<div class="container admin-wrap">
+  <%- include('_nav') %>
+  <div>
+    <div class="section-head"><h1 style="font-size:1.6rem;margin:0">คอร์สเรียน</h1><a class="btn btn-accent" href="/admin/courses/new">+ สร้างคอร์สใหม่</a></div>
+    <div class="table-wrap"><table>
+      <tr><th>คอร์ส</th><th>ราคา</th><th>บทเรียน</th><th>ผู้เรียน</th><th>สถานะ</th><th></th></tr>
+      <% courses.forEach(function (c) { %>
+        <tr>
+          <td><strong><%= c.title %></strong><div class="small muted"><%= c.subject %> <%= c.level %></div></td>
+          <td><span class="price <%= c.price ? '' : 'free' %>" style="font-size:1rem"><%= formatPrice(c.price) %></span></td>
+          <td><%= c.lesson_count %></td><td><%= c.students %></td>
+          <td><%- c.published ? '<span class="badge badge-success">เผยแพร่</span>' : '<span class="badge badge-muted">ฉบับร่าง</span>' %></td>
+          <td style="white-space:nowrap"><a class="btn btn-primary btn-sm" href="/admin/courses/<%= c.id %>">แก้ไข / อัปโหลดไฟล์</a> <a class="btn btn-ghost btn-sm" href="/courses/<%= c.slug %>">ดูหน้าเว็บ</a></td>
+        </tr>
+      <% }) %>
+      <% if (!courses.length) { %><tr><td colspan="6" class="center muted">ยังไม่มีคอร์ส — กด "สร้างคอร์สใหม่"</td></tr><% } %>
+    </table></div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

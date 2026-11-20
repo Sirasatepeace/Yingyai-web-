@@ -1,0 +1,38 @@
+<%- include('../partials/head') %>
+<div class="container admin-wrap">
+  <%- include('_nav') %>
+  <div>
+    <h1 style="font-size:1.6rem">ตรวจสอบการชำระเงิน</h1>
+    <div class="chips" style="margin-bottom:14px">
+      <% [['pending','รอตรวจสอบ'],['active','อนุมัติแล้ว'],['rejected','ไม่ผ่าน']].forEach(function (s) { %>
+        <a class="chip <%= status === s[0] ? 'active' : '' %>" href="/admin/payments?status=<%= s[0] %>"><%= s[1] %></a>
+      <% }) %>
+    </div>
+    <% if (!rows.length) { %><div class="card card-pad center muted">ไม่มีรายการ</div><% } %>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">
+    <% rows.forEach(function (r) { %>
+      <div class="card">
+        <% if (r.slip) { %>
+          <a href="/admin/slips/<%= r.slip %>" target="_blank" style="display:block;background:var(--bg)">
+            <% if (/\.pdf$/i.test(r.slip)) { %><div class="card-pad center">📕 เปิดสลิป (PDF)</div><% } else { %><img src="/admin/slips/<%= r.slip %>" alt="สลิป" style="max-height:260px;margin:auto;object-fit:contain"><% } %>
+          </a>
+        <% } %>
+        <div class="card-pad stack" style="padding:14px">
+          <div><strong><%= r.first_name %> <%= r.last_name %></strong> (<%= r.nickname %>) <span class="small muted">@<%= r.username %></span></div>
+          <div>📚 <a href="/courses/<%= r.slug %>"><%= r.title %></a></div>
+          <div class="row"><span>ยอด <strong><%= formatPrice(r.amount) %></strong></span><span class="small muted"><%= r.created_at %></span></div>
+          <% if (r.note) { %><div class="small" style="color:var(--danger)"><%= r.note %></div><% } %>
+          <% if (r.status !== 'active') { %>
+            <form method="post" action="/admin/payments/<%= r.id %>/approve"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn-success btn-sm btn-block">✓ ยืนยันการชำระเงิน เปิดสิทธิ์เรียน</button></form>
+          <% } %>
+          <% if (r.status === 'pending') { %>
+            <form method="post" action="/admin/payments/<%= r.id %>/reject" class="row"><input type="hidden" name="_csrf" value="<%= csrf %>">
+              <input type="text" name="note" placeholder="เหตุผล เช่น ยอดไม่ครบ" style="flex:1"><button class="btn btn-danger btn-sm">ไม่ผ่าน</button></form>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,24 @@
+<a class="card course-card" href="/courses/<%= c.slug %>">
+  <div class="course-cover">
+    <span class="badge <%= c.price > 0 ? 'badge-paid' : 'badge-free' %>"><%= c.price > 0 ? 'คอร์สพรีเมียม' : 'เรียนฟรี' %></span>
+    <% if (c.cover) { %><img src="/covers/<%= c.cover %>" alt="" loading="lazy"><% } else { %><span><%= c.subject || c.title %></span><% } %>
+  </div>
+  <div class="course-body">
+    <div class="course-meta">
+      <% if (c.subject) { %><span class="badge"><%= c.subject %></span><% } %>
+      <% if (c.level) { %><span class="badge badge-muted"><%= c.level %></span><% } %>
+    </div>
+    <h3><%= c.title %></h3>
+    <p class="muted small" style="margin:0"><%= c.short_desc %></p>
+    <div class="course-foot">
+      <span class="small muted">📚 <%= c.lesson_count %> บทเรียน<% if (c.students) { %> · 👥 <%= c.students %><% } %></span>
+      <% if (typeof myStatus !== 'undefined' && myStatus[c.id] === 'active') { %>
+        <span class="badge badge-success">ลงทะเบียนแล้ว</span>
+      <% } else if (typeof myStatus !== 'undefined' && myStatus[c.id] === 'pending') { %>
+        <span class="badge badge-warning">รอตรวจสอบ</span>
+      <% } else { %>
+        <span class="price <%= c.price > 0 ? '' : 'free' %>"><%= formatPrice(c.price) %></span>
+      <% } %>
+    </div>
+  </div>
+</a>
