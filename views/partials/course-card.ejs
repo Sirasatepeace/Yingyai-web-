@@ -11,7 +11,7 @@
     <h3><%= c.title %></h3>
     <p class="muted small" style="margin:0"><%= c.short_desc %></p>
     <div class="course-foot">
-      <span class="small muted">📚 <%= c.lesson_count %> บทเรียน<% if (c.students) { %> · 👥 <%= c.students %><% } %></span>
+      <span class="small muted">📚 <%= c.lesson_count %> บทเรียน<% if (user && user.role === 'admin' && c.students) { %> · 👥 <%= c.students %><% } %></span>
       <% if (typeof myStatus !== 'undefined' && myStatus[c.id] === 'active') { %>
         <span class="badge badge-success">ลงทะเบียนแล้ว</span>
       <% } else if (typeof myStatus !== 'undefined' && myStatus[c.id] === 'pending') { %>

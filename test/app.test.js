@@ -194,4 +194,16 @@ test('admin creates courses, uploads files; student enrolls, pays, learns', asyn
 
   // student cannot reach admin
   assert.strictEqual((await s.get('/admin')).status, 403);
+
+  // Student counts must be absent from HTML sent to visitors and students.
+  const visitor = new Client();
+  for (const client of [visitor, s, admin]) {
+    const home = await client.get('/');
+    const catalog = await client.get('/courses');
+    assert.strictEqual(home.status, 200);
+    assert.strictEqual(catalog.status, 200);
+    assert.strictEqual(/<b>\d+<\/b>นักเรียน/.test(home.text), client === admin);
+    assert.strictEqual(home.text.includes('👥'), client === admin);
+    assert.strictEqual(catalog.text.includes('👥'), client === admin);
+  }
 });

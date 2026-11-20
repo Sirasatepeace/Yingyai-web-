@@ -11,7 +11,9 @@
       </div>
       <div class="stats">
         <div><b><%= stats.courses %></b>คอร์สเรียน</div>
-        <div><b><%= stats.students %></b>นักเรียน</div>
+        <% if (user && user.role === 'admin') { %>
+          <div><b><%= stats.students %></b>นักเรียน</div>
+        <% } %>
         <div><b>24/7</b>เรียนได้ตลอด</div>
       </div>
     </div>
